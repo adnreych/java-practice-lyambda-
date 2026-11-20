@@ -1,4 +1,6 @@
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  Задание 4. Collectors и логи сервиса.
@@ -38,6 +40,37 @@ public class Task04Collectors {
             new LogLine("INFO", "search", 75));
 
     public static void main(String[] args) {
+		Map<String, Long> cntByService = LOG.stream()
+			.collect(Collectors.groupingBy(LogLine::service, Collectors.counting()));
+		
+		System.out.println("записей по сервисам" + cntByService);
 
+		Map<String, Integer> sumByService = LOG.stream()
+			.collect(Collectors.groupingBy(LogLine::service, Collectors.summingInt(LogLine::ms)));
+		System.out.println("сумма мс по сервисам" + sumByService);
+
+		Map<Boolean, List<LogLine>> slowFast = LOG.stream()
+			.collect(Collectors.groupingBy(l -> l.ms() > 500));
+		System.out.println("медленных " + slowFast.get(true).size() + ", быстрых " + slowFast.get(false).size());
+
+		Map<String, Integer> maxByService = LOG.stream()
+			.collect(Collectors.groupingBy(LogLine::service, Collectors.mapping(LogLine::ms, Collectors.reducing(0, Integer::max))));
+		System.out.println("максимум мс по сервисам " + maxByService);
+
+		String errorServices = LOG.stream()
+			.filter(l -> "ERROR".equals(l.level()))
+			.map(LogLine::service)
+			.distinct()
+			.sorted()
+			.collect(Collectors.joining(" | "));
+		System.out.println(errorServices);
+
+		Map<String, List<Integer>> msByService = LOG.stream()
+			.collect(Collectors.groupingBy(LogLine::service, Collectors.mapping(LogLine::ms, Collectors.toList())));
+		System.out.println("замеры по сервисам " + msByService);
+
+		int totalMs = LOG.stream()
+			.mapToInt(LogLine::ms).sum();
+		System.out.println("всего мс/записей " + totalMs + "/" + LOG.size());
     }
 }

@@ -61,12 +61,18 @@ public class Task06Optional {
     }
 
     public static boolean isOverheated(Room room) {
-        // TODO: реализовать
-        return false;
+        return Optional.ofNullable(room)
+			.flatMap(Room::getSensor)
+			.flatMap(Sensor::getTemperature)
+			.map(t -> t > 25.0)
+			.orElse(false);
     }
 
     public static String getTemperatureDisplay(Room room) {
-        // TODO: реализовать
-        return "";
+        return Optional.ofNullable(room)
+			.flatMap(Room::getSensor)
+			.flatMap(Sensor::getTemperature)
+			.map(t -> t + " °C")
+			.orElse("Датчик не в сети");
     }
 }
