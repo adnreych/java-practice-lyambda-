@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,7 +11,12 @@ import java.util.List;
 public class Task02Pipeline {
 
     public static void main(String[] args) {
-        List<String> words = List.of("java", "kotlin", "api", "stream", "lambda",
-                "Go", "c", "functional", "map", "SQL");
+        List<String> words = new ArrayList<>(List.of("java", "kotlin", "api", "stream", "lambda",
+                "Go", "c", "functional", "map", "SQL")).stream().filter((String s) -> s.length() > 4)
+                .sorted()
+                .map(String::toUpperCase)
+                .toList();
+
+        System.out.println(String.join(", ", words));
     }
 }
