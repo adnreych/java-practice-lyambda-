@@ -30,5 +30,13 @@ public class Task01AnonymousClass {
             }
         });
         System.out.println(words);
+
+        List<String> wordsLambda = new ArrayList<>(List.of("lambda", "java", "stream", "api"));
+
+        wordsLambda.sort((a, b) -> Integer.compare(a.length(), b.length()));
+        System.out.println(wordsLambda);
+
+        wordsLambda.removeIf(s -> s.length() > 5);
+        System.out.println(wordsLambda);
     }
 }

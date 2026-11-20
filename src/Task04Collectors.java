@@ -1,4 +1,7 @@
+import java.util.IntSummaryStatistics;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  Задание 4. Collectors и логи сервиса.
@@ -38,6 +41,37 @@ public class Task04Collectors {
             new LogLine("INFO", "search", 75));
 
     public static void main(String[] args) {
+        Map<String, Long> countByService = LOG.stream()
+                .collect(Collectors.groupingBy(LogLine::service, Collectors.counting()));
+        System.out.println("записей по сервисам: " + countByService);
 
+        Map<String, Integer> sumByService = LOG.stream()
+                .collect(Collectors.groupingBy(LogLine::service, Collectors.summingInt(LogLine::ms)));
+        System.out.println("сумма мс по сервисам: " + sumByService);
+
+        Map<Boolean, Long> slowAndFast = LOG.stream()
+                .collect(Collectors.partitioningBy(line -> line.ms() > 500, Collectors.counting()));
+        System.out.println("медленных " + slowAndFast.get(true) + ", быстрых " + slowAndFast.get(false));
+
+        Map<String, Integer> maxByService = LOG.stream()
+                .collect(Collectors.toMap(LogLine::service, LogLine::ms, Integer::max));
+        System.out.println("максимум мс по сервисам: " + maxByService);
+
+        String errorServices = LOG.stream()
+                .filter(line -> "ERROR".equals(line.level()))
+                .map(LogLine::service)
+                .distinct()
+                .collect(Collectors.joining(" | "));
+        System.out.println("сервисы с ошибками: " + errorServices);
+
+        Map<String, List<Integer>> timesByService = LOG.stream()
+                .collect(Collectors.groupingBy(
+                        LogLine::service,
+                        Collectors.mapping(LogLine::ms, Collectors.toList())));
+        System.out.println("замеры по сервисам: " + timesByService);
+
+        IntSummaryStatistics stats = LOG.stream()
+                .collect(Collectors.summarizingInt(LogLine::ms));
+        System.out.println("всего мс/записей: " + stats.getSum() + "/" + stats.getCount());
     }
 }

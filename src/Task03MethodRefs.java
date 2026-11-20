@@ -19,13 +19,13 @@ import java.util.function.UnaryOperator;
 public class Task03MethodRefs {
 
     public static void main(String[] args) {
-        Function<String, Integer> f1 = s -> s.length();
-        Supplier<List<String>> s1 = () -> new ArrayList<>();
-        Function<String, Integer> f2 = s -> Integer.parseInt(s);
-        BiPredicate<String, String> p1 = (a, b) -> a.equals(b);
-        UnaryOperator<String> u1 = s -> s.toUpperCase();
-        Consumer<Object> c1 = x -> System.out.println(x);
-        Comparator<String> cmp = (a, b) -> b.compareTo(a);
+        Function<String, Integer> f1 = String::length;
+        Supplier<List<String>> s1 = ArrayList::new;
+        Function<String, Integer> f2 = Integer::parseInt;
+        BiPredicate<String, String> p1 = String::equals;
+        UnaryOperator<String> u1 = String::toUpperCase;
+        Consumer<Object> c1 = System.out::println;
+        Comparator<String> cmp = Comparator.reverseOrder();
 
         List<String> list = s1.get();
         list.add("b");
