@@ -1,4 +1,8 @@
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  Задание 4. Collectors и логи сервиса.
@@ -38,6 +42,46 @@ public class Task04Collectors {
             new LogLine("INFO", "search", 75));
 
     public static void main(String[] args) {
+        List<String> services = LOG.stream().map(s -> s.service).distinct().toList();
+        HashMap<String, Long> serviceToLogAmount = new HashMap();
+        HashMap<String, Integer> serviceToMs = new HashMap();
+        HashMap<String, Integer> serviceToMaxMs = new HashMap();
+        HashMap<String, List<Integer>> serviceToListMs = new HashMap();
 
+        for (String service : services) {
+            serviceToListMs.put(service, LOG.stream()
+                    .filter(l -> l.service.equals(service))
+                    .map(l -> l.ms)
+                    .toList()
+            );
+
+            serviceToLogAmount.put(service,
+                    LOG.stream().filter(l -> l.service.equals(service)).count()
+            );
+            serviceToMs.put(service,
+                    LOG.stream().filter(l -> l.service.equals(service))
+                            .map(l -> l.ms)
+                            .reduce(0, Integer::sum)
+            );
+            serviceToMaxMs.put(service,
+                    LOG.stream().filter(l -> l.service.equals(service))
+                            .map(l -> l.ms)
+                            .max(Integer::compare)
+                            .get()
+            );
+        }
+
+        String withErrors = LOG.stream().filter(l -> l.level.equals("ERROR"))
+                .map(l -> l.service).distinct().collect(Collectors.joining(" | "));
+        Long slowCount = LOG.stream().map(l -> l.ms).filter(l -> l > 500).count();
+        Integer msSum = LOG.stream().map(l -> l.ms).reduce(0, Integer::sum);
+
+        System.out.println("записей по сервисам: " + serviceToLogAmount);
+        System.out.println("сумма мс по сервисам: " + serviceToMs);
+        System.out.println("медленных " + slowCount + " быстрых " + (LOG.size() - slowCount));
+        System.out.println("максимум мс по сервисам: " + serviceToMaxMs);
+        System.out.println("сервисы с ошибками: " + withErrors);
+        System.out.println("замеры по сервисам: " + serviceToListMs);
+        System.out.println("всего мс/записей: " + msSum + "/" + LOG.size());
     }
 }
