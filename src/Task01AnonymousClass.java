@@ -11,7 +11,7 @@ import java.util.function.Predicate;
  [api, java]
  */
 public class Task01AnonymousClass {
-
+/*
     public static void main(String[] args) {
         List<String> words = new ArrayList<>(List.of("lambda", "java", "stream", "api"));
 
@@ -31,4 +31,19 @@ public class Task01AnonymousClass {
         });
         System.out.println(words);
     }
+*/
+    public static void main(String[] args) {
+        List<String> listToPrint = new ArrayList<>(List.of("lambda", "java", "stream", "api")).stream()
+                .sorted(Comparator.comparing(String::length))
+                .toList();
+
+        System.out.println(listToPrint);
+
+        listToPrint = listToPrint.stream()
+                .sorted(Comparator.comparing(String::length))
+                .filter((String s) -> s.length() <= 4)
+                .toList();
+
+        System.out.println(listToPrint);
+   }
 }

@@ -1,3 +1,5 @@
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -38,6 +40,83 @@ public class Task04Collectors {
             new LogLine("INFO", "search", 75));
 
     public static void main(String[] args) {
+        HashMap<String, Integer> recordsByServices = new HashMap<>();
+        List<LogLine> authData = LOG.stream().filter(log -> "auth".equals(log.service())).toList();
+        List<LogLine> searchData = LOG.stream().filter(log -> "search".equals(log.service())).toList();
+        List<LogLine> payData = LOG.stream().filter(log -> "pay".equals(log.service())).toList();
+        List<LogLine> ordersData = LOG.stream().filter(log -> "orders".equals(log.service())).toList();
 
+        recordsByServices.put("auth", authData.size());
+        recordsByServices.put("search", searchData.size());
+        recordsByServices.put("pay", payData.size());
+        recordsByServices.put("orders", ordersData.size());
+
+        HashMap<String, Integer> msSumByServices = new HashMap<>();
+        Integer totalMsSum = 0;
+        Integer msSum = 0;
+        for (LogLine a : authData) {
+            msSum += a.ms();
+            totalMsSum += a.ms();
+        }
+
+        msSumByServices.put("auth", msSum);
+        msSum = 0;
+
+        for (LogLine a : searchData) {
+            msSum += a.ms();
+            totalMsSum += a.ms();
+        }
+
+        msSumByServices.put("search", msSum);
+        msSum = 0;
+
+        for (LogLine a : payData) {
+            msSum += a.ms();
+            totalMsSum += a.ms();
+        }
+
+        msSumByServices.put("pay", msSum);
+        msSum = 0;
+
+        for (LogLine a : ordersData) {
+            msSum += a.ms();
+            totalMsSum += a.ms();
+        }
+
+        msSumByServices.put("orders", msSum);
+        msSum = 0;
+
+        Long numberOfSlowLogs = LOG.stream().filter(logLine -> logLine.ms() > 500).count();
+        Long numberOfFastLogs = LOG.size() - numberOfSlowLogs;
+
+        HashMap<String, Integer> maxMsByService = new HashMap<>();
+        maxMsByService.put("auth", authData.stream().map(log -> log.ms()).max(Comparator.naturalOrder()).get());
+        maxMsByService.put("search", searchData.stream().map(log -> log.ms()).max(Comparator.naturalOrder()).get());
+        maxMsByService.put("pay", payData.stream().map(log -> log.ms()).max(Comparator.naturalOrder()).get());
+        maxMsByService.put("orders", ordersData.stream().map(log -> log.ms()).max(Comparator.naturalOrder()).get());
+
+        List<String> servicesWithErrors = LOG.stream()
+                .filter(log -> "ERROR".equals(log.level()))
+                .map(LogLine::service)
+                .distinct()
+                .toList();
+
+        System.out.println("Записей по сервисам: " + recordsByServices);
+
+        List<Integer> authRecordsData = authData.stream().map(LogLine::ms).toList();
+        List<Integer> searchRecordsData = searchData.stream().map(LogLine::ms).toList();
+        List<Integer> payRecordsData = searchData.stream().map(LogLine::ms).toList();
+        List<Integer> ordersRecordsData = ordersData.stream().map(LogLine::ms).toList();
+
+
+
+        System.out.println(recordsByServices);
+        System.out.println(msSumByServices);
+        System.out.println("медленных " + numberOfSlowLogs + ", быстрых " + numberOfFastLogs);
+        System.out.println(maxMsByService);
+        System.out.println("сервисы с ошибками: " + String.join(" | ", servicesWithErrors));
+        System.out.println("замеры по сервисам: " + "{auth=" + authRecordsData + ", search=" + searchRecordsData +
+                ", pay=" + payRecordsData + ", orders=" + ordersRecordsData + "}");
+        System.out.println("всего мс/записей " + totalMsSum + "/" + LOG.size());
     }
 }

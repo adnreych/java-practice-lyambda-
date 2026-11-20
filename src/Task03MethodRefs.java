@@ -1,11 +1,6 @@
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.BiPredicate;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
 
 /**
  Задание 3. Ссылки на метод.
@@ -19,21 +14,37 @@ import java.util.function.UnaryOperator;
 public class Task03MethodRefs {
 
     public static void main(String[] args) {
-        Function<String, Integer> f1 = s -> s.length();
-        Supplier<List<String>> s1 = () -> new ArrayList<>();
-        Function<String, Integer> f2 = s -> Integer.parseInt(s);
-        BiPredicate<String, String> p1 = (a, b) -> a.equals(b);
-        UnaryOperator<String> u1 = s -> s.toUpperCase();
-        Consumer<Object> c1 = x -> System.out.println(x);
-        Comparator<String> cmp = (a, b) -> b.compareTo(a);
-
-        List<String> list = s1.get();
+        List<String> list = s1();
         list.add("b");
         list.add("a");
-        list.sort(cmp);
-        System.out.println(f1.apply("java") + " " + f2.apply("42") + " " + p1.test("x", "x")
-                + " " + u1.apply("ok") + " " + list);
-        c1.accept("готово");
+        list.sort(Comparator.reverseOrder());
+        System.out.println(f1("java") + " " + f2("42") + " " + p1("x", "x") + " " + u1("ok") + " " + list);
+
+        c1("готово");
         System.out.println(list.getClass().getName());
+    }
+
+    private static Integer f1(String s) {
+        return s.length();
+    }
+
+    private static ArrayList<String> s1() {
+        return new ArrayList<>();
+    }
+
+    private static Integer f2(String s) {
+        return Integer.parseInt(s);
+    }
+
+    private static Boolean p1(String s1, String s2) {
+        return s1.equals(s2);
+    }
+
+    private static String u1(String s) {
+        return s.toUpperCase();
+    }
+
+    private static void c1(String s) {
+        System.out.println(s);
     }
 }
